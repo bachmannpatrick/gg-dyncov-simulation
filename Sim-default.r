@@ -9,7 +9,6 @@
 # Clean Workspace
 #rm(list= ls())
 
-
 #Preparation ----
 #Load libaries
 library(CLVTools)
@@ -67,7 +66,7 @@ start.time <- Sys.time()
   setting <- "001"
   
   # Number of simulations
-  sim.no <- 2
+  sim.no <- 100
   
   # Number of customers to be simulated
   n = 2500 # max: 11000 customers due to exogenous contextual factors
@@ -85,7 +84,7 @@ start.time <- Sys.time()
   beta.gg =0.8
   a.gg = 0.0
   ## GG:Covariate parameters ----
-  gamma1 = 1
+  gamma1 = 0
   
   #Gamma-Gamma: remove first transaction
   #Should we consider the first transaction for the spending model?

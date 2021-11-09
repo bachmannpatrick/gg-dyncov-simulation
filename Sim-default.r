@@ -63,7 +63,7 @@ start.time <- Sys.time()
   options(lubridate.week.start = 0)
   
   # Setting number
-  setting <- "001"
+  setting <- "024"
   
   # Number of simulations
   sim.no <- 100
@@ -79,12 +79,12 @@ start.time <- Sys.time()
   
   ## GG:Base parameters ----
   alpha.gg = 2
-  r.gg = 4.5
+  r.gg = 1.5
   b.gg = 0
   beta.gg =0.8
   a.gg = 0.0
   ## GG:Covariate parameters ----
-  gamma1 = 0
+  gamma1 = 1.5
   
   #Gamma-Gamma: remove first transaction
   #Should we consider the first transaction for the spending model?
@@ -95,7 +95,7 @@ start.time <- Sys.time()
   
   
   #available covariates (defined exogenous): "direct.marketing", "high.season", "low.season", "gender"
-  covariate.names.gg <- c("direct.marketing") #"high.season", "low.season", "gender"
+  covariate.names.gg <- c("income") #"direct.marketing", "high.season", "low.season", "gender", "income"
   
   # Create an empty list to store the results
   results.param <- list()
@@ -110,7 +110,7 @@ start.time <- Sys.time()
     # Currently there is data available for 2500 customers
     load("data/SimDataCovariates.RData")
     #only use relevant covariates
-    covariates.dynamic <- covariates.dynamic[, list(Id, Cov.Date, high.season, low.season, direct.marketing, gender)]
+    covariates.dynamic <- covariates.dynamic[, list(Id, Cov.Date, high.season, low.season, direct.marketing, gender, income)]
     #fix the Date variable
     mydata[, Date:=ymd(Date)]
     #make sure direct marketing is a dummy variable
@@ -136,10 +136,11 @@ start.time <- Sys.time()
                      "b" = b.gg,
                      "beta" = log(beta.gg),
                      "a"= a.gg,
-                     "direct.marketing" = gamma1
+                     #"direct.marketing" = gamma1
                      #high.season" = high.season.gg,
                      #"low.season" = low.season.gg,
-                     #"gender"= gender.gg
+                     #"gender"= gamma1
+                     "income"=gamma1
                      )
     
     # get the weekly date for the transactions in order to allocate the correct weekly covariates
@@ -159,7 +160,7 @@ start.time <- Sys.time()
     mydata <- cov.table.dyncov[, list(Id, Date, Price)]
     
     #remove all info we do not need
-    transactions.cov <- copy(cov.table.dyncov[,list(Id, date.weekly, Date, Price, high.season, direct.marketing, low.season, gender)])
+    transactions.cov <- copy(cov.table.dyncov[,list(Id, date.weekly, Date, Price, high.season, direct.marketing, low.season, gender, income)])
     
     #Add a transaction counter for every customer
     transactions.cov[, trans.no:=(seq_len(.N)), by=list(Id)]
@@ -171,10 +172,11 @@ start.time <- Sys.time()
                  "b" = b.gg,
                  "beta" = log(beta.gg),
                  "a" = a.gg,  #Note: Has to be defined for ECME,
-                 "direct.marketing"= gamma1
+                 #"direct.marketing"= gamma1
                  #"high.season"= 0.1,
                  #"gender"=0.1
                  #"low.season"= 0.1,
+                 "income" = 0.1
     )
     
     LL.shift(params=params1, cov.table = transactions.cov, names.cov=covariate.names.gg, remove.first.transaction = remove.first.transaction)
